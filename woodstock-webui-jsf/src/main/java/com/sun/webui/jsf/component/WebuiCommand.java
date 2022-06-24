@@ -20,7 +20,6 @@ import jakarta.el.MethodExpression;
 import jakarta.faces.component.UICommand;
 import com.sun.faces.annotation.Property;
 import jakarta.faces.context.FacesContext;
-import jakarta.faces.el.MethodBinding;
 import jakarta.faces.event.AbortProcessingException;
 import jakarta.faces.event.ActionEvent;
 import jakarta.faces.event.FacesEvent;
@@ -75,22 +74,22 @@ public class WebuiCommand extends UICommand {
      * @return MethodBinding
      */
     //Override to annotate
-    @Property(isHidden = true, isAttribute = false)
-    @Override
-    public MethodBinding getAction() {
-        return super.getAction();
-    }
+//    @Property(isHidden = true, isAttribute = false)
+//    @Override
+//    public MethodBinding getAction() {
+//        return super.getAction();
+//    }
 
     /**
      * This implementation invokes {@code super.getActionListener}.
      * @return MethodBinding
      */
     //Override to annotate
-    @Property(isHidden = true, isAttribute = false)
-    @Override
-    public MethodBinding getActionListener() {
-        return super.getActionListener();
-    }
+//    @Property(isHidden = true, isAttribute = false)
+//    @Override
+//    public MethodBinding getActionListener() {
+//        return super.getActionListener();
+//    }
 
     /**
      * MethodExpression representing the application action to invoke when this

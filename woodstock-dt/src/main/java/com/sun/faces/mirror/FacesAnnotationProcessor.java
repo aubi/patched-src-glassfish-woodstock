@@ -57,8 +57,6 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import jakarta.el.ELResolver;
 import jakarta.el.MethodExpression;
-import jakarta.faces.el.PropertyResolver;
-import jakarta.faces.el.VariableResolver;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -446,11 +444,11 @@ public final class FacesAnnotationProcessor extends AbstractProcessor {
                     .getTypeUtils().asElement(superClass);
             String superCName = superClassType.getQualifiedName()
                     .toString();
-            if (superCName.equals(PropertyResolver.class.getName())) {
+            /*if (superCName.equals(PropertyResolver.class.getName())) {
                 propResolverNames.add(elt.getQualifiedName().toString());
             } else if (superCName.equals(VariableResolver.class.getName())) {
                 variableResolverNames.add(elt.getQualifiedName().toString());
-            } else if (superCName.equals(ELResolver.class.getName())) {
+            } else*/ if (superCName.equals(ELResolver.class.getName())) {
                 javaeeResolverNames.add(elt.getQualifiedName().toString());
             }
             superClass = superClassType.getSuperclass();
@@ -1324,8 +1322,8 @@ public final class FacesAnnotationProcessor extends AbstractProcessor {
                         Map<String, String> attrDescs = tagAttrs.get(tagName);
                         for (PropertyInfo propInfo
                                 : comp.getPropertyInfos().values()) {
-                            AttributeInfo attrInfo =
-                                    propInfo.getAttributeInfo();
+                            AttributeInfo attrInfo
+                                    = propInfo.getAttributeInfo();
                             if (attrInfo instanceof DeclaredAttributeInfo
                                     && attrDescs.containsKey(
                                             attrInfo.getName())) {
@@ -1448,11 +1446,11 @@ public final class FacesAnnotationProcessor extends AbstractProcessor {
                 generateFacesConfig(factory);
             }
 
-            generateJspTagClasses(factory);
+//            generateJspTagClasses(factory);
 
             // Generate JSP tag library configuration file
             if (declaredComps.size() > 0) {
-                generateJspTagLib(factory);
+//                generateJspTagLib(factory);
             }
         }
     }

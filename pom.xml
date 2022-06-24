@@ -29,7 +29,7 @@
 
     <groupId>org.glassfish.woodstock</groupId>
     <artifactId>woodstock-parent</artifactId>
-    <version>5.0.0.payara-p1</version>
+    <version>5.0.0.payara-p2</version>
     <packaging>pom</packaging>
 
     <name>Woodstock Parent</name>
@@ -129,7 +129,7 @@
             <dependency>
                 <groupId>jakarta.faces</groupId>
                 <artifactId>jakarta.faces-api</artifactId>
-                <version>3.0.0</version>
+                <version>4.0.1</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.json</groupId>
@@ -164,7 +164,7 @@
             <dependency>
                 <groupId>org.glassfish</groupId>
                 <artifactId>jakarta.faces</artifactId>
-                <version>3.0.0</version>
+                <version>4.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.velocity</groupId>

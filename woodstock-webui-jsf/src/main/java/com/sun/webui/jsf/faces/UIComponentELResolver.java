@@ -49,14 +49,14 @@ public final class UIComponentELResolver extends ELResolver {
     public Object getValue(final ELContext context, final Object base,
             final Object property) {
 
-        log("getValue(ctx, " + base + "," + property + ")");
-        if (context == null) {
-            throw new NullPointerException();
-        }
+        //log("getValue(ctx, " + base + "," + property + ")");
         if ((base == null) || (!(base instanceof UIComponent))
                 || (property == null)) {
-            log("argument is null or not of applicable type. returning");
+            //log("argument is null or not of applicable type. returning");
             return null;
+        }
+        if (context == null) {
+            throw new NullPointerException();
         }
 
         // Try to resolve to facet or child UIComponent
@@ -107,16 +107,16 @@ public final class UIComponentELResolver extends ELResolver {
     public void setValue(final ELContext context, final Object base,
             final Object property, final Object value) {
 
-        log("setValue(ctx, " + base + "," + property + "," + value + ")");
+        //log("setValue(ctx, " + base + "," + property + "," + value + ")");
 
-        if (context == null) {
-            throw new NullPointerException();
-        }
         if ((base == null) || (!(base instanceof UIComponent))
                 || (property == null)
                 || (value == null) || (!(value instanceof UIComponent))) {
-            log("argument is null or not of applicable type. returning");
+            //log("argument is null or not of applicable type. returning");
             return;
+        }
+        if (context == null) {
+            throw new NullPointerException();
         }
 
         UIComponent component = (UIComponent) base;
@@ -163,14 +163,14 @@ public final class UIComponentELResolver extends ELResolver {
     public boolean isReadOnly(final ELContext context, final Object base,
             final Object property) {
 
-        log("isReadOnly(ctx, " + base + "," + property + ")");
-        if (context == null) {
-            throw new NullPointerException();
-        }
+        //log("isReadOnly(ctx, " + base + "," + property + ")");
         if ((base == null) || (!(base instanceof UIComponent))
                 || (property == null)) {
-            log("argument is null or not of applicable type. returning");
+            //log("argument is null or not of applicable type. returning");
             return false;
+        }
+        if (context == null) {
+            throw new NullPointerException();
         }
 
         UIComponent component = (UIComponent) base;
@@ -214,15 +214,15 @@ public final class UIComponentELResolver extends ELResolver {
     public Class getType(final ELContext context, final Object base,
             final Object property) {
 
-        log("getType(ctx, " + base + "," + property + ")");
-        if (context == null) {
-            throw new NullPointerException();
-        }
         if ((base == null)
                 || (!(base instanceof UIComponent))
                 || (property == null)) {
-            log("argument is null or not of applicable type. returning");
+            // not handled by this resolver
             return null;
+        }
+
+        if (context == null) {
+            throw new NullPointerException("EL context is null in UIComponentELResolver");
         }
 
         UIComponent component = (UIComponent) base;
@@ -274,16 +274,14 @@ public final class UIComponentELResolver extends ELResolver {
     public Iterator<FeatureDescriptor> getFeatureDescriptors(
             final ELContext context, final Object base) {
 
-        log("getFeatureDescriptors(ctx, " + base + ")");
-
-        if (context == null) {
-            throw new NullPointerException();
-        }
         if (base == null) {
             return Arrays.asList(new FeatureDescriptor[0]).iterator();
         }
         if (!(base instanceof UIComponent)) {
             return null;
+        }
+        if (context == null) {
+            throw new NullPointerException();
         }
 
         List<FeatureDescriptor> result = new ArrayList<FeatureDescriptor>();
@@ -316,13 +314,11 @@ public final class UIComponentELResolver extends ELResolver {
     public Class getCommonPropertyType(final ELContext context,
             final Object base) {
 
-        log("getCommonPropertyType(ctx, " + base + ")");
-
-        if (context == null) {
-            throw new NullPointerException();
-        }
         if (!(base instanceof UIComponent)) {
             return null;
+        }
+        if (context == null) {
+            throw new NullPointerException();
         }
         return String.class;
     }

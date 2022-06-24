@@ -20,9 +20,7 @@ import com.sun.faces.annotation.Property;
 import com.sun.webui.jsf.util.CookieUtils;
 import com.sun.webui.jsf.util.LogUtil;
 import com.sun.webui.jsf.util.RenderingUtilities;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import jakarta.el.ELException;
 import jakarta.el.MethodExpression;
 import jakarta.el.ValueExpression;
 import jakarta.faces.application.FacesMessage;
@@ -30,9 +28,6 @@ import jakarta.faces.component.EditableValueHolder;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
-import jakarta.faces.el.EvaluationException;
-import jakarta.faces.el.MethodBinding;
-import jakarta.faces.el.ValueBinding;
 import jakarta.faces.event.AbortProcessingException;
 import jakarta.faces.event.FacesEvent;
 import jakarta.faces.event.ValueChangeEvent;
@@ -40,6 +35,8 @@ import jakarta.faces.event.ValueChangeListener;
 import jakarta.faces.validator.Validator;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Tree component is used to display a tree structure in the rendered HTML
@@ -113,7 +110,7 @@ public final class Tree extends TreeNode implements EditableValueHolder {
     /**
      * Validator binding.
      */
-    private MethodBinding validatorBinding = null;
+    private ValueExpression validatorBinding = null;
 
     /**
      * The submittedValue value of this component.
@@ -133,7 +130,7 @@ public final class Tree extends TreeNode implements EditableValueHolder {
     /**
      * The "valueChange" MethodBinding for this component.
      */
-    private MethodBinding valueChangeMethod = null;
+    private ValueExpression valueChangeMethod = null;
 
     /**
      * The value of the {@code Tree}. This should be a String representing
@@ -628,15 +625,15 @@ public final class Tree extends TreeNode implements EditableValueHolder {
         valid = newValid;
     }
 
-    @Override
-    public MethodBinding getValidator() {
-        return validatorBinding;
-    }
-
-    @Override
-    public void setValidator(final MethodBinding newValidatorBinding) {
-        validatorBinding = newValidatorBinding;
-    }
+//    @Override
+//    public MethodBinding getValidator() {
+//        return validatorBinding;
+//    }
+//
+//    @Override
+//    public void setValidator(final MethodBinding newValidatorBinding) {
+//        validatorBinding = newValidatorBinding;
+//    }
 
     @Override
     public void addValidator(final Validator validator) {
@@ -665,17 +662,17 @@ public final class Tree extends TreeNode implements EditableValueHolder {
         }
     }
 
-    @Override
-    public MethodBinding getValueChangeListener() {
-        return valueChangeMethod;
-    }
-
-    @Override
-    public void setValueChangeListener(
-            final MethodBinding newValueChangeMethod) {
-
-        valueChangeMethod = newValueChangeMethod;
-    }
+//    @Override
+//    public MethodBinding getValueChangeListener() {
+//        return valueChangeMethod;
+//    }
+//
+//    @Override
+//    public void setValueChangeListener(
+//            final MethodBinding newValueChangeMethod) {
+//
+//        valueChangeMethod = newValueChangeMethod;
+//    }
 
     @Override
     public void addValueChangeListener(final ValueChangeListener listener) {
@@ -706,10 +703,11 @@ public final class Tree extends TreeNode implements EditableValueHolder {
         // Perform standard superclass processing
         super.broadcast(event);
         if (event instanceof ValueChangeEvent) {
-            MethodBinding method = getValueChangeListener();
-            if (method != null) {
+            ValueChangeEvent valueChangeEvent = (ValueChangeEvent) event;
+            ValueChangeListener[] valueChangeListeners = getValueChangeListeners();
+            for (ValueChangeListener listener : valueChangeListeners) {
                 FacesContext context = getFacesContext();
-                method.invoke(context, new Object[]{event});
+                listener.processValueChange(new ValueChangeEvent(context, this, valueChangeEvent.getOldValue(), valueChangeEvent.getNewValue()));
             }
         }
     }
@@ -774,16 +772,16 @@ public final class Tree extends TreeNode implements EditableValueHolder {
         if (!isValid() || !isLocalValueSet()) {
             return;
         }
-        ValueBinding vb = getValueBinding("value");
+        ValueExpression vb = getValueExpression("value");
         if (vb == null) {
             return;
         }
         try {
-            vb.setValue(context, getLocalValue());
+            vb.setValue(getFacesContext().getELContext(), getLocalValue());
             setValue(null);
             setLocalValueSet(false);
             return;
-        } catch (EvaluationException ex) {
+        } catch (ELException ex) {
             String messageStr = ex.getMessage();
             if (messageStr != null) {
                 FacesMessage message;
@@ -810,23 +808,23 @@ public final class Tree extends TreeNode implements EditableValueHolder {
         }
     }
 
-    @Override
-    public void processValidators(final FacesContext context) {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-
-        // Skip processing if our rendered flag is false
-        if (!isRendered()) {
-            return;
-        }
-
-        super.processValidators(context);
-
-        if (!isImmediate()) {
-            executeValidate(context);
-        }
-    }
+//    @Override
+//    public void processValidators(final FacesContext context) {
+//        if (context == null) {
+//            throw new NullPointerException();
+//        }
+//
+//        // Skip processing if our rendered flag is false
+//        if (!isRendered()) {
+//            return;
+//        }
+//
+//        super.processValidators(context);
+//
+//        if (!isImmediate()) {
+//            executeValidate(context);
+//        }
+//    }
 
     /**
      * Executes validation logic.
@@ -1073,7 +1071,7 @@ public final class Tree extends TreeNode implements EditableValueHolder {
         } else {
             values[16] =  Boolean.FALSE;
         }
-        values[17] = saveAttachedState(context, validators);
+        values[17] = saveAttachedState(context, null/*validators*/);
         values[18] = saveAttachedState(context, validatorBinding);
         values[19] = saveAttachedState(context, valueChangeMethod);
         return (values);
@@ -1101,26 +1099,26 @@ public final class Tree extends TreeNode implements EditableValueHolder {
         localValueSet = ((Boolean) values[15]);
         valid = ((Boolean) values[16]);
 
-        List restoredValidators = (List)
-                restoreAttachedState(context, values[17]);
-        Iterator iter;
-        if (restoredValidators != null) {
-            // if there were some validators registered prior to this
-            // method being invoked, merge them with the list to be
-            // restored.
-            if (null != validators) {
-                iter = restoredValidators.iterator();
-                while (iter.hasNext()) {
-                    validators.add((Validator) iter.next());
-                }
-            } else {
-                validators = restoredValidators;
-            }
-        }
+//        List restoredValidators = (List)
+//                restoreAttachedState(context, values[17]);
+//        Iterator iter;
+//        if (restoredValidators != null) {
+//            // if there were some validators registered prior to this
+//            // method being invoked, merge them with the list to be
+//            // restored.
+//            if (null != validators) {
+//                iter = restoredValidators.iterator();
+//                while (iter.hasNext()) {
+//                    validators.add((Validator) iter.next());
+//                }
+//            } else {
+//                validators = restoredValidators;
+//            }
+//        }
 
-        validatorBinding = (MethodBinding) restoreAttachedState(context,
+        validatorBinding = (ValueExpression) restoreAttachedState(context,
                 values[18]);
-        valueChangeMethod = (MethodBinding) restoreAttachedState(context,
+        valueChangeMethod = (ValueExpression) restoreAttachedState(context,
                 values[19]);
     }
 
